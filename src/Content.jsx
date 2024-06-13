@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { MoviesIndex } from "./MoviesIndex";
+import { MoviesNew } from "./MoviesNew";
 
 export function Content() {
   const [movies, setMovies] = useState([]);
@@ -14,6 +15,18 @@ export function Content() {
       setMovies(response.data);
     });
   };
+                         //params movie data to be sent in POST request
+  const handleCreateMovie = (params, successCallback) => {
+    console.log("handleCreateMovie", params);//logs params to make sure correct data is being passed to the fx
+    axios.post("http://localhost:3000/movies.json", params).then((response) => {
+      setMovies([...movies, response.data]);
+      successCallback();
+    });
+  };
+  // sends post request to the specified URL using the axios library with the params (movie data that the server expects to receive)
+  // .then() method used to handle the response from the server onces the POST request is completed
+  // callback function is 'response' which is the server's response passed as an argument to the callback function
+  // setMovies(response.data); updates local state movies (reference above I think) with the new moive data recieved from teh server's response. The ... create a new array that includes all existing 'movies' and the new movie 'response.data'
 
   useEffect(handleIndexMovies, []);
   // useEffect hook takes two arguments:
@@ -22,6 +35,7 @@ export function Content() {
 
   return (
     <main>
+      <MoviesNew onCreateMovie={handleCreateMovie}/>
       <MoviesIndex movies={movies} />
     </main>
   )
